@@ -8,6 +8,6 @@ class PromotionFacade extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'promotion.facade';
+        return 'promotion';
     }
 }

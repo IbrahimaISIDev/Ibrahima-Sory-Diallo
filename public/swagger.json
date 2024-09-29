@@ -1,0 +1,568 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "API de Gestion",
+      "version": "1.0.0",
+      "description": "API pour la gestion des utilisateurs, des promotions et des référentiels."
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3000/api/v1"
+      }
+    ],
+    "paths": {
+      "/login": {
+        "post": {
+          "summary": "Connexion de l'utilisateur",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "example": "user@example.com"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "password123"
+                    }
+                  },
+                  "required": ["email", "password"]
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Connexion réussie",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "access_token": {
+                          "type": "string"
+                        },
+                        "token_type": {
+                          "type": "string"
+                        },
+                        "expires_in": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "401": {
+                "description": "Non autorisé"
+              }
+            }
+          }
+        }
+      },
+      "/refresh": {
+        "post": {
+          "summary": "Rafraîchir le token d'accès",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "refresh_token": {
+                      "type": "string",
+                      "example": "refresh_token_example"
+                    }
+                  },
+                  "required": ["refresh_token"]
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Token rafraîchi avec succès",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "access_token": {
+                          "type": "string"
+                        },
+                        "token_type": {
+                          "type": "string"
+                        },
+                        "expires_in": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "401": {
+                "description": "Token de rafraîchissement invalide"
+              }
+            }
+          }
+        }
+      },
+      "/logout": {
+        "post": {
+          "summary": "Déconnexion de l'utilisateur",
+          "responses": {
+            "200": {
+              "description": "Déconnexion réussie",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/auth/{provider}": {
+        "get": {
+          "summary": "Rediriger vers le fournisseur d'authentification",
+          "parameters": [
+            {
+              "name": "provider",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "302": {
+              "description": "Redirection vers le fournisseur d'authentification"
+            }
+          }
+        }
+      },
+      "/auth/{provider}/callback": {
+        "get": {
+          "summary": "Gestion de la réponse du fournisseur d'authentification",
+          "parameters": [
+            {
+              "name": "provider",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "302": {
+              "description": "Redirection après l'authentification réussie"
+            }
+          }
+        }
+      },
+      "/promotions": {
+        "get": {
+          "summary": "Récupérer toutes les promotions",
+          "responses": {
+            "200": {
+              "description": "Liste de promotions récupérées avec succès",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Promotion"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Créer une nouvelle promotion",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewPromotion"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Promotion créée avec succès",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Promotion"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/promotions/{id}": {
+        "get": {
+          "summary": "Récupérer une promotion par ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Promotion récupérée avec succès",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Promotion"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Promotion non trouvée"
+            }
+          }
+        },
+        "put": {
+          "summary": "Mettre à jour une promotion par ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewPromotion"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Promotion mise à jour avec succès",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Promotion"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Promotion non trouvée"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Supprimer une promotion par ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Promotion supprimée avec succès"
+            },
+            "404": {
+              "description": "Promotion non trouvée"
+            }
+          }
+        }
+      },
+      "/referentiels": {
+        "get": {
+          "summary": "Obtenir tous les référentiels",
+          "parameters": [
+            {
+              "name": "etat",
+              "in": "query",
+              "required": false,
+              "description": "Filtrer par état (actif, archivé)",
+              "schema": {
+                "type": "string",
+                "enum": ["actif", "archivé"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Liste des référentiels",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Referentiel"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Créer un nouveau référentiel",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreReferentielRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Référentiel créé avec succès",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Referentiel"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Erreur de validation"
+            }
+          }
+        }
+      },
+      "/referentiels/{id}": {
+        "get": {
+          "summary": "Obtenir un référentiel par ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "ID du référentiel à récupérer",
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Référentiel trouvé",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Referentiel"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Référentiel non trouvé"
+            }
+          }
+        },
+        "put": {
+          "summary": "Mettre à jour un référentiel par ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "ID du référentiel à mettre à jour",
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateReferentielRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Référentiel mis à jour avec succès",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Referentiel"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Référentiel non trouvé"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Supprimer un référentiel par ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "ID du référentiel à supprimer",
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Référentiel supprimé avec succès"
+            },
+            "404": {
+              "description": "Référentiel non trouvé"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "Promotion": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "discount": {
+              "type": "number"
+            },
+            "start_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "end_date": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        },
+        "NewPromotion": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "discount": {
+              "type": "number"
+            },
+            "start_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "end_date": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          "required": ["name", "discount", "start_date", "end_date"]
+        },
+        "Referentiel": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "details": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ReferentielDetail"
+              }
+            }
+          }
+        },
+        "StoreReferentielRequest": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "details": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ReferentielDetail"
+              }
+            }
+          },
+          "required": ["name", "details"]
+        },
+        "ReferentielDetail": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": ["key", "value"]
+        },
+        "UpdateReferentielRequest": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "details": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ReferentielDetail"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  

@@ -1,9 +1,11 @@
 <?php
 namespace App\Interfaces;
 
+use Illuminate\Http\Request;
+
 interface UserServiceInterface
 {
-   public function getAllUsers();
+   public function getAllUsers(Request $request);
 
    public function createUser(array $data);
 

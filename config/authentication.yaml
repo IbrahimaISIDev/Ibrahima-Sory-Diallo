@@ -1,0 +1,2 @@
+authentication:
+  provider: App\Services\PassportAuthService

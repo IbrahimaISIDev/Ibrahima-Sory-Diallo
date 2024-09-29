@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 interface UserRepositoryInterface
 {
-    public function getAllUsers();
+    public function getAllUsers(array $filters);
     public function createUser(array $data);
     public function getUserById(string $id); 
     public function updateUser(string $id, array $data): ?array;

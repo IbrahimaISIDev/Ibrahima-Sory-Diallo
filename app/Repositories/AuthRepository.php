@@ -2,10 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Interfaces\AuthRepositoryInterface;
 use App\Models\User;
+use App\Models\UserMysql;
 use App\Models\BlacklistedToken;
 use Illuminate\Support\Facades\Hash;
+use App\Interfaces\AuthRepositoryInterface;
 
 class AuthRepository implements AuthRepositoryInterface
 {
@@ -25,7 +26,7 @@ class AuthRepository implements AuthRepositoryInterface
 
     public function findUserByCredentials(array $credentials)
     {
-        $user = User::where('login', $credentials['login'])->first();
+        $user = User::where('email', $credentials['email'])->first();
 
         if ($user) {
             if (Hash::check($credentials['password'], $user->password)) {
@@ -35,4 +36,5 @@ class AuthRepository implements AuthRepositoryInterface
         
         return null;
     }
+
 }

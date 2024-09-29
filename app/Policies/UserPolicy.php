@@ -3,29 +3,46 @@
 namespace App\Policies;
 
 use App\Models\User;
+use App\Models\UserMysql;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy
 {
     use HandlesAuthorization;
 
-    public function create(User $user, string $role)
+    public function viewAny(User $user)
     {
-        if ($user->role === 'Admin') {
-            return in_array($role, ['Admin', 'Coach', 'Manager', 'CM']);
-        } elseif ($user->role === 'Manager') {
-            return in_array($role, ['Coach', 'Manager', 'CM']);
+        return $user->fonction === 'ADMIN' || ($user->fonction === 'MANAGER');
+    }
+
+    public function view(User $user, User $model)
+    {
+        return $user->fonction === 'ADMIN' || ($user->fonction === 'MANAGER' && $model->fonction !== 'ADMIN');
+    }
+
+    public function create(User $user)
+    {
+        $fonction = $user->fonction;
+        return $this->canCreateUser($user, $fonction);
+    }
+
+    public function canCreateUser(User $user, string $fonction)
+    {
+        if ($user->fonction === 'ADMIN') {
+            return in_array($fonction, ['ADMIN', 'Coach', 'MANAGER', 'CM']);
+        } elseif ($user->fonction === 'MANAGER') {
+            return in_array($fonction, ['Coach', 'MANAGER', 'CM']);
         }
         return false;
     }
 
-    public function createLearner(User $user)
+    public function update(User $user, User $model)
     {
-        return in_array($user->role, ['Admin', 'Manager', 'CM']);
+        return $user->fonction === 'ADMIN' || ($user->fonction === 'MANAGER' && $model->fonction !== 'ADMIN');
     }
 
-    public function createLearnerList(User $user)
+    public function delete(User $user)
     {
-        return in_array($user->role, ['Admin', 'Manager', 'CM']);
+        return $user->fonction === 'ADMIN';
     }
 }

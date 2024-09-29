@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\UserMysql;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Interfaces\AuthServiceInterface;
@@ -26,51 +28,42 @@ class AuthController extends Controller
     public function handleProviderCallback($provider)
     {
         $socialUser = Socialite::driver($provider)->user();
-        
-        $user = UserMysql::where('email', $socialUser->getEmail())->first();
-        
+
+        $user = User::where('email', $socialUser->getEmail())->first();
+
         if (!$user) {
-            $user = UserMysql::create([
+            $user = User::create([
                 'name' => $socialUser->getName(),
                 'email' => $socialUser->getEmail(),
                 // 'password' => Hash::make(str_random(24)),
             ]);
         }
-        
+
         Auth::login($user);
-        
+
         return redirect('/home');
     }
 
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
-        $result = $this->authService->login($credentials);
-        
-        if ($result) {
-            return response()->json($result);
-        }
-        
-        return response()->json(['error' => 'Unauthorized'], 401);
+        Log::info('Login method called', ['request' => $request->all()]);
+
+        $credentials = $request->validate([
+            'email' => 'required',
+            'password' => 'required',
+        ]);
+
+        return $this->authService->login($credentials);
     }
 
     public function refresh(Request $request)
     {
-        $refreshToken = $request->input('refresh_token');
-        $result = $this->authService->refresh($refreshToken);
-        
-        if ($result) {
-            return response()->json($result);
-        }
-        
-        return response()->json(['error' => 'Invalid refresh token'], 401);
+        $refreshToken = $request->validate(['refresh_token' => 'required'])['refresh_token'];
+        return $this->authService->refresh($refreshToken);
     }
 
     public function logout(Request $request)
     {
-        $token = $request->bearerToken();
-        $this->authService->logout($token);
-        
-        return response()->json(['message' => 'Successfully logged out']);
+        return $this->authService->logout($request->bearerToken());
     }
 }

@@ -2,14 +2,20 @@
 
 namespace App\Http\Requests;
 
-use App\Models\UserFirebase;
+use App\Enums\EtatEnum;
+use App\Models\UserMysql;
+use App\Rules\EmailRule;
+use App\Enums\FonctionState;
+use App\Rules\TelephoneRule;
+use App\Rules\CustumPasswordRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUserRequest extends FormRequest
 {
     public function authorize()
     {
-        return $this->user()->can('create', [UserFirebase::class, $this->input('role')]);
+        // return $this->user()->can('create', [UserMysql::class, $this->input('fonction')]);
+        return true;
     }
 
     public function rules()
@@ -18,13 +24,13 @@ class StoreUserRequest extends FormRequest
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
             'adresse' => 'required|string',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
-            'telephone' => 'required|string',
+            'role_id' => 'required|numeric|exists:roles,id|in:1,2',
+            'email' => ['required',new EmailRule(),'unique:users,email'],
+            'password' =>['required', new CustumPasswordRule()],
+            'telephone' => ['required',new TelephoneRule(),'unique:users,telephone'],
             'photo' => 'nullable|image|max:2048',
-            'fonction' => 'required|string',
-            'status' => 'required|in:actif,inactif',
-            'role' => 'required|in:Admin,Coach,Manager,CM'
+            'statut' => ['string', 'in:' . implode(',', array_map(fn($case) => $case->value, EtatEnum::cases()))],
+            'fonction' => 'required|string|max:255',
         ];
     }
 
@@ -41,7 +47,7 @@ class StoreUserRequest extends FormRequest
             'telephone.required' => 'Le numéro de téléphone est obligatoire.',
             'fonction.required' => 'La fonction est obligatoire.',
             'status.required' => 'Le statut est obligatoire.',
-            'status.in' => 'Le statut doit être actif ou inactif.',
+            'status.in' => 'Le statut doit être actif.',
             'role.required' => 'Le rôle est obligatoire.',
             'role.in' => 'Le rôle doit être Admin, Coach, Manager ou CM.'
         ];

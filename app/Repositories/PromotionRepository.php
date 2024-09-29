@@ -2,48 +2,82 @@
 
 namespace App\Repositories;
 
-use App\Models\PromotionFirebase;
-use App\Interfaces\PromotionFirebaseInterface;
+use App\Enums\EtatPromotion;
+use App\Facades\PromotionFacade;
+use App\Interfaces\PromotionRepositoryInterface;
 
-class PromotionRepository 
-// implements PromotionRepositoryInterface
+class PromotionRepository implements PromotionRepositoryInterface
 {
-    protected $model;
-
-    public function __construct(PromotionFirebase $model)
+    public function getAllPromotions()
     {
-        $this->model = $model;
+        return PromotionFacade::all();
     }
 
-    public function all()
+    public function getPromotionById($id)
     {
-        return $this->model->all();
+        return PromotionFacade::with(['apprenants', 'referentiels'])->find($id);
     }
 
-    public function find($id)
+    public function createPromotion(array $promotionDetails)
     {
-        return $this->model->find($id);
+        return PromotionFacade::create($promotionDetails);
     }
 
-    public function create(array $data)
+    public function updatePromotion($id, array $newDetails)
     {
-        return $this->model->create($data);
+        return PromotionFacade::updatePromotion($id, $newDetails);
     }
 
-    public function update($id, array $data)
+    public function deletePromotion($id)
     {
-        return $this->model->update($id, $data);
+        PromotionFacade::destroy($id);
     }
 
-    public function delete($id)
+    public function getPromotionEncours()
     {
-        return $this->model->delete($id);
+        return PromotionFacade::getEncours();
     }
 
-    public function findByName($name)
+    public function addReferentielToPromotion($promotionId, $referentielId)
     {
-        return $this->model->findByName($name);
+        $this->getPromotionById($promotionId)->referentiels()->attach($referentielId);
     }
 
-    // Implémentez d'autres méthodes spécifiques aux promotions ici
+    public function removeReferentielFromPromotion($promotionId, $referentielId)
+    {
+        $this->getPromotionById($promotionId)->referentiels()->detach($referentielId);
+    }
+
+    public function findByLibelle($libelle)
+    {
+        return PromotionFacade::where('libelle', $libelle)->first();
+    }
+
+    public function getPromotionStats($id)
+    {
+        $promotion = $this->getPromotionById($id);
+        return [
+            'info' => $promotion,
+            'nombre_apprenants' => $promotion->apprenants->count(),
+            'nombre_apprenants_actifs' => $promotion->apprenants->where('statut', 'actif')->count(),
+            'nombre_apprenants_inactifs' => $promotion->apprenants->where('statut', 'inactif')->count(),
+            'referentiels' => $promotion->referentiels->map(function ($referentiel) {
+                return [
+                    'info' => $referentiel,
+                    'apprenants_count' => $referentiel->apprenants->count(),
+                ];
+            }),
+        ];
+    }
+
+    public function cloturerPromotion($id)
+    {
+        $promotion = $this->getPromotionById($id);
+        if ($promotion->date_fin->isPast()) {
+            $promotion->update(['etat' => EtatPromotion::CLOTURER]);
+            // Ici, on pourrait déclencher un job pour envoyer les relevés de notes
+            return true;
+        }
+        return false;
+    }
 }

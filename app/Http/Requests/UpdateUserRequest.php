@@ -2,13 +2,18 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\EmailRule;
+use App\Models\UserMysql;
+use App\Rules\TelephoneRule;
+use App\Rules\CustumPasswordRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUserRequest extends FormRequest
 {
     public function authorize()
     {
-        return $this->user()->can('update', $this->route('user'));
+        // return $this->user()->can('update',[UserMysql::class, $this->route('fonction')]);
+        return true;
     }
 
     public function rules()
@@ -17,9 +22,9 @@ class UpdateUserRequest extends FormRequest
             'nom' => 'sometimes|required|string|max:255',
             'prenom' => 'sometimes|required|string|max:255',
             'adresse' => 'sometimes|required|string',
-            'email' => 'sometimes|required|email|unique:users,email,' . $this->route('user')->id,
-            'password' => 'sometimes|required|string|min:8',
-            'telephone' => 'sometimes|required|string',
+            'email' => ['sometimes',new EmailRule(),'unique:users,email'],
+            'password' =>['sometimes', new CustumPasswordRule()],
+            'telephone' => ['sometimes',new TelephoneRule(),'unique:users,telephone'],
             'photo' => 'nullable|image|max:2048',
             'fonction' => 'sometimes|required|string',
             'status' => 'sometimes|required|in:actif,inactif',

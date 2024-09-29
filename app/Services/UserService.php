@@ -1,8 +1,9 @@
 <?php
 namespace App\Services;
 
-use App\Interfaces\UserRepositoryInterface;
+use Illuminate\Http\Request;
 use App\Interfaces\UserServiceInterface;
+use App\Interfaces\UserRepositoryInterface;
 
 class UserService implements UserServiceInterface
 {
@@ -11,9 +12,9 @@ class UserService implements UserServiceInterface
     {
         $this->Repository = $Repository;
     }
-    public function getAllUsers()
+    public function getAllUsers(Request $request)
     {
-        return $this->Repository->getAllUsers();
+        return $this->Repository->getAllUsers($request->only('fonction'));
     }
 
     public function createUser(array $data)
