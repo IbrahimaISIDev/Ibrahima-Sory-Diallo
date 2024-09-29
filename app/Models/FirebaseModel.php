@@ -34,7 +34,7 @@ abstract class FirebaseModel
 
     protected function getDatabase(): Database
     {
-        $firebaseCredentialsBase64 = env('FIREBASE_CREDENTIALS_BASE64');
+        $firebaseCredentialsBase64 = file_get_contents(config('database.connections.firebase.credentials'));
         if (!$firebaseCredentialsBase64) {
             throw new \Exception('FIREBASE_CREDENTIALS_BASE64 is not set in .env file');
         }

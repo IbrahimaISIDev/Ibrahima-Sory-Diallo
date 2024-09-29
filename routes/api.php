@@ -6,6 +6,7 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\ApprenantsController;
+use App\Http\Controllers\EmargementController;
 use App\Http\Controllers\ReferentielController;
 
 Route::prefix('v1')->group(function () {
@@ -58,5 +59,23 @@ Route::prefix('v1')->group(function () {
         Route::get('notes/referentiels/{id}', [NoteController::class, 'getNotesForReferentiel']);
         Route::get('notes/export/referentiels/{id}', [NoteController::class, 'exportNotesReferentiel']);
         Route::get('notes/export/apprenants/{id}', [NoteController::class, 'exportNotesApprenant']);
+
+        Route::post('emargements', [EmargementController::class, 'enregistrerGroupe']);
+        Route::post('emargements/apprenants/{id}', [EmargementController::class, 'enregistrerApprenant']);
+        Route::get('emargements', [EmargementController::class, 'lister']);
+        Route::patch('emargements/apprenants/{id}', [EmargementController::class, 'modifier']);
+        Route::post('emargements/declencher-absences', [EmargementController::class, 'declencherAbsences']);
+        Route::post('emargements/apprenants/{id}/entree', [EmargementController::class, 'enregistrerEntree']);
+        Route::post('emargements/apprenants/{id}/sortie', [EmargementController::class, 'enregistrerSortie']);
+        // Route::post('emargements/apprenants/{id}/relance', [EmargementController::class,'sendRelanceEmargement']);
+        // Route::get('emargements/stats', [EmargementController::class,'stats']);
+        // Route::get('emargements/export/{format}', [EmargementController::class,'export']);
+        // Route::get('emargements/apprenants/{id}/stats', [EmargementController::class,'statsByApprenant']);
+        // Route::get('emargements/apprenants/{id}/stats/heures', [EmargementController::class,'statsByApprenantHeures']);
+        // Route::get('emargements/apprenants/{id}/stats/jours', [EmargementController::class,'statsByApprenantJours']);
+        // Route::get('emargements/apprenants/{id}/stats/mois', [EmargementController::class,'statsByApprenantMois']);
+        // Route::get('emargements/apprenants/{id}/stats/annuel', [EmargementController::class,'statsByApprenantAnnuel']);
+        // Route::get('emargements/apprenants/{id}/stats/semestriel', [EmargementController::class,'statsByApprenantSemestriel']);
+        
     });
 });

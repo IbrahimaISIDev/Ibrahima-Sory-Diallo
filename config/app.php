@@ -34,7 +34,7 @@ return [
     ],
 
     'providers' => ServiceProvider::defaultProviders()->merge([
-        
+
         App\Providers\AuthCustomProvider::class,
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
@@ -44,11 +44,13 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\FirebaseServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        App\Providers\EmargementServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Emargement' => App\Facades\EmargementFacade::class,
     ])->toArray(),
 
 ];
