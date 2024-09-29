@@ -1,2 +1,3 @@
 *
 !.gitignore
+/storage/firebase/firebase_decoded.key
