@@ -12,16 +12,27 @@ class FirebaseService
 
     public function __construct()
     {
-        // Spécifiez le chemin du fichier de clé de service et l'URI de la base de données
+        // Récupérer les credentials encodés en base64 depuis le fichier .env
+        $firebaseCredentialsBase64 = env('FIREBASE_CREDENTIALS_BASE64');
+
+        // Décoder les credentials en base64
+        $firebaseCredentialsJson = base64_decode($firebaseCredentialsBase64);
+
+        // Sauvegarder temporairement le fichier décodé dans un fichier JSON
+        $temporaryFilePath = sys_get_temp_dir() . '/firebase_credentials.json';
+        file_put_contents($temporaryFilePath, $firebaseCredentialsJson);
+
+        // Spécifiez le fichier temporaire comme chemin de clé de service
         $factory = (new Factory)
-            ->withServiceAccount('/home/dev/Documents/gestion_scolaire/storage/firebase/app-gestion-pedagogique-firebase-adminsdk-pg06l-6570ed71c6.json')
-            ->withDatabaseUri('https://app-gestion-pedagogique-default-rtdb.firebaseio.com');
+            ->withServiceAccount($temporaryFilePath)
+            ->withDatabaseUri(env('FIREBASE_DATABASE_URL'));
 
         // Initialisation de la base de données Firebase
         $this->database = $factory->createDatabase();
+
+        // Supprimer le fichier temporaire après utilisation
+        unlink($temporaryFilePath);
     }
-
-
 
     public function getDatabase(): Database
     {
