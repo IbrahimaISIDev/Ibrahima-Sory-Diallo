@@ -24,12 +24,39 @@ abstract class FirebaseModel
         $this->query = $this->reference;
     }
 
+    // protected function getDatabase(): Database
+    // {
+    //     $factory = (new Factory())
+    //         ->withDatabaseUri(config('database.connections.firebase.database'))
+    //         ->withServiceAccount(config('database.connections.firebase.credentials'));
+    //     return $factory->createDatabase();
+    // }
+
     protected function getDatabase(): Database
     {
-        $factory = (new Factory())
-            ->withDatabaseUri(config('database.connections.firebase.database'))
-            ->withServiceAccount(config('database.connections.firebase.credentials'));
-        return $factory->createDatabase();
+        $firebaseCredentialsBase64 = env('FIREBASE_CREDENTIALS_BASE64');
+        if (!$firebaseCredentialsBase64) {
+            throw new \Exception('FIREBASE_CREDENTIALS_BASE64 is not set in .env file');
+        }
+
+        $firebaseCredentialsJson = base64_decode($firebaseCredentialsBase64);
+        $temporaryFilePath = sys_get_temp_dir() . '/firebase_credentials.json';
+        file_put_contents($temporaryFilePath, $firebaseCredentialsJson);
+
+        try {
+            $factory = (new Factory)
+                ->withServiceAccount($temporaryFilePath)
+                ->withDatabaseUri(config('database.connections.firebase.database'));
+
+            $database = $factory->createDatabase();
+
+            unlink($temporaryFilePath);
+
+            return $database;
+        } catch (\Exception $e) {
+            unlink($temporaryFilePath);
+            throw $e;
+        }
     }
 
     public function getReference($collection)
@@ -47,7 +74,7 @@ abstract class FirebaseModel
         $result = $this->reference->getChild($id)->getValue();
         return $result === null ? new stdClass() : (object) $result;
     }
-    
+
     public function getKey()
     {
         return $this->reference->getKey(); // Assurez-vous que cette ligne est correcte selon votre implémentation
@@ -259,28 +286,28 @@ abstract class FirebaseModel
     }
 
     protected function applyFilters($data)
-{
-    // Vérifier si $data est un tableau
-    if (!is_array($data)) {
-        return []; // Retourner un tableau vide si $data n'est pas un tableau
-    }
+    {
+        // Vérifier si $data est un tableau
+        if (!is_array($data)) {
+            return []; // Retourner un tableau vide si $data n'est pas un tableau
+        }
 
-    return array_filter($data, function ($item) {
-        if (!is_array($item)) {
-            return false;
-        }
-        foreach ($this->filters as $filter) {
-            [$field, $operator, $value] = $filter;
-            if (!isset($item[$field])) {
+        return array_filter($data, function ($item) {
+            if (!is_array($item)) {
                 return false;
             }
-            if (!$this->evaluateCondition($item[$field], $operator, $value)) {
-                return false;
+            foreach ($this->filters as $filter) {
+                [$field, $operator, $value] = $filter;
+                if (!isset($item[$field])) {
+                    return false;
+                }
+                if (!$this->evaluateCondition($item[$field], $operator, $value)) {
+                    return false;
+                }
             }
-        }
-        return true;
-    });
-}
+            return true;
+        });
+    }
 
 
     protected function evaluateCondition($fieldValue, $operator, $value)

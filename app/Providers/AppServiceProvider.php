@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Note;
 use App\Models\User;
 use Cloudinary\Cloudinary;
 use App\Models\UserFirebase;
@@ -43,6 +44,7 @@ use App\Interfaces\PromotionRepositoryInterface;
 use App\Interfaces\ReferentielFirebaseInterface;
 use App\Interfaces\ApprenantsRepositoryInterface;
 use App\Interfaces\ReferentielRepositoryInterface;
+use Kreait\Firebase\Database;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -60,6 +62,13 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(NoteRepositoryInterface::class, NoteRepository::class);
         $this->app->bind(NoteServiceInterface::class, NoteService::class);
+
+        $this->app->bind(NoteRepositoryInterface::class, function ($app) {
+            return new NoteRepository(
+                $app->make(Note::class),
+                $app->make(Database::class)
+            );
+        });
 
         $this->app->bind(PromotionRepositoryInterface::class, PromotionRepository::class);
         $this->app->bind(PromotionFirebaseInterface::class, PromotionFirebase::class);

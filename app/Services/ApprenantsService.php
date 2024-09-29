@@ -74,15 +74,16 @@ class ApprenantsService implements ApprenantsServiceInterface
     {
         // $import = new ApprenantsImport($this->repository);
         // Excel::import($import, $file);
-
         // if ($import->failures()->isNotEmpty()) {
         //     $export = new FailedApprenantsExport($import->failures());
         //     $failedFile = 'failed_imports/apprenants_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
         //     Excel::store($export, $failedFile, 'public');
-        //     return Storage::url($failedFile);
+        //     return [
+        //         'success' => false,
+        //         'failed_file' => Storage::url($failedFile)
+        //     ];
         // }
-
-        // return null;
+        // return ['success' => true];
     }
 
     public function getInactiveApprenants()

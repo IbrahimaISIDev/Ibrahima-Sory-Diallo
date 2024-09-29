@@ -3,11 +3,9 @@
 // app/Http/Controllers/NoteController.php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AddNotesModuleRequest;
-use App\Http\Requests\AddNotesApprenantRequest;
-use App\Http\Requests\UpdateNotesApprenantRequest;
-use App\Interfaces\NoteServiceInterface;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Interfaces\NoteServiceInterface;
 
 class NoteController extends Controller
 {
@@ -18,21 +16,21 @@ class NoteController extends Controller
         $this->noteService = $noteService;
     }
 
-    public function addNotesToModule(AddNotesModuleRequest $request, int $id): JsonResponse
+    public function addNotesToModule(Request $request, int $id): JsonResponse
     {
-        $notes = $this->noteService->addNotesToModule($id, $request->validated()['notes']);
+        $notes = $this->noteService->addNotesToModule($id, $request->all()['notes']);
         return response()->json($notes, 201);
     }
 
-    public function addNotesToApprenant(AddNotesApprenantRequest $request): JsonResponse
+    public function addNotesToApprenant(Request $request): JsonResponse
     {
-        $notes = $this->noteService->addNotesToApprenant($request->validated()['apprenantId'], $request->validated()['notes']);
+        $notes = $this->noteService->addNotesToApprenant($request->all()['apprenantId'], $request->all()['notes']);
         return response()->json($notes, 201);
     }
 
-    public function updateApprenantNotes(UpdateNotesApprenantRequest $request, int $id): JsonResponse
+    public function updateApprenantNotes(Request $request, int $id): JsonResponse
     {
-        $notes = $this->noteService->updateApprenantNotes($id, $request->validated()['notes']);
+        $notes = $this->noteService->updateApprenantNotes($id, $request->all()['notes']);
         return response()->json($notes);
     }
 

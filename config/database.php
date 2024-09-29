@@ -69,7 +69,7 @@ return [
 
         'firebase' => [
             'driver' => 'firebase',
-            'credentials' => env('FIREBASE_CREDENTIALS'),
+            'credentials' => env('FIREBASE_CREDENTIALS_BASE64'),
             'database' => env('FIREBASE_DATABASE_URL'),
         ],
 
@@ -80,8 +80,7 @@ return [
             'database' => env('MONGODB_DATABASE', 'homestead'),
             'username' => env('MONGODB_USERNAME', ''),
             'password' => env('MONGODB_PASSWORD', ''),
-            'options' => [
-            ],
+            'options' => [],
         ],
 
     ],

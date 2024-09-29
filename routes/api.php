@@ -15,7 +15,7 @@ Route::prefix('v1')->group(function () {
 
     Route::apiResource('/users', UserController::class);
 
-    // Route::middleware(['auth:api', 'blacklisted'])->group(function () {
+    Route::middleware(['auth:api', 'blacklisted'])->group(function () {
 
         Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
@@ -59,4 +59,4 @@ Route::prefix('v1')->group(function () {
         Route::get('notes/export/referentiels/{id}', [NoteController::class, 'exportNotesReferentiel']);
         Route::get('notes/export/apprenants/{id}', [NoteController::class, 'exportNotesApprenant']);
     });
-// });
+});
