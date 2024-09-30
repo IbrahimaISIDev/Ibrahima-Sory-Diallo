@@ -40,3 +40,4 @@ networks:
 
 volumes:
   postgres_data:  # Volume persistant pour les données PostgreSQL
+
