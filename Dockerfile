@@ -51,7 +51,7 @@ RUN chown -R www-data:www-data /var/www/storage \
     && chmod -R 775 /var/www/bootstrap/cache
 
 # Exposer le port
-EXPOSE 9000
+EXPOSE 8000
 
 # Copier le script de démarrage
 COPY start.sh /usr/local/bin/start.sh
