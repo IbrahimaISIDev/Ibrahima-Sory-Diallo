@@ -45,6 +45,7 @@ return [
         App\Providers\FirebaseServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         App\Providers\EmargementServiceProvider::class,
+        L5Swagger\L5SwaggerServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
