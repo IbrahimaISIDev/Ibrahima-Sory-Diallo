@@ -14,7 +14,7 @@ sleep 2
 
 # Vérification de PHP-FPM
 echo "Vérification de PHP-FPM..."
-if ! pgrep php-fpm > /dev/null; then
+if ! ps aux | grep -q "[p]hp-fpm"; then
     echo "ERREUR: PHP-FPM n'a pas démarré correctement"
     exit 1
 else

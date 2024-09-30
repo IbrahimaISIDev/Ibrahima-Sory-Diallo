@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libpq-dev \
     nginx \
+    procps \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -22,9 +23,8 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Configuration de PHP et PHP-FPM
-RUN echo "error_log = /dev/stderr" >> /usr/local/etc/php-fpm.conf \
-    && echo "log_level = warning" >> /usr/local/etc/php-fpm.conf \
-    && echo "php_admin_value[error_log] = /dev/stderr" >> /usr/local/etc/php-fpm.d/www.conf \
+RUN echo "php_admin_value[error_log] = /dev/stderr" >> /usr/local/etc/php-fpm.d/www.conf \
+    && echo "php_admin_flag[log_errors] = on" >> /usr/local/etc/php-fpm.d/www.conf \
     && echo "catch_workers_output = yes" >> /usr/local/etc/php-fpm.d/www.conf
 
 # Définition du répertoire de travail
