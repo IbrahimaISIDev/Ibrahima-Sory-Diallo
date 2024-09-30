@@ -1,7 +1,10 @@
 #!/bin/sh
 
+# Start Nginx
+service nginx start
+
 # Start PHP-FPM
 php-fpm -D
 
-# Start Nginx
-nginx -g "daemon off;"
+# Keep the container running
+tail -f /dev/null
