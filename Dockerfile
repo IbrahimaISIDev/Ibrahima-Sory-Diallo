@@ -1,3 +1,4 @@
+# Dockerfile
 FROM php:8.3-fpm
 
 # Installation des dépendances système et des extensions PHP
@@ -30,9 +31,8 @@ COPY . /var/www
 RUN composer install --no-dev --optimize-autoloader
 
 # Configuration des permissions
-RUN mkdir -p /var/www/storage/logs /var/www/bootstrap/cache \
-    && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
-    && chmod -R 777 /var/www/storage /var/www/bootstrap/cache
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 755 /var/www/storage /var/www/bootstrap/cache
 
 # Copie et configuration du script de démarrage
 COPY start.sh /usr/local/bin/start.sh
