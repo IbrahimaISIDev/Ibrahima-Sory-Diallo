@@ -1,4 +1,3 @@
-# Dockerfile
 FROM php:8.3-fpm
 
 RUN apt-get update && apt-get install -y \
@@ -14,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     libssl-dev \
     pkg-config \
+    nginx \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -33,7 +33,7 @@ RUN mkdir -p /var/www/storage/logs /var/www/bootstrap/cache \
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 9000
+EXPOSE 9000 80
 
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
