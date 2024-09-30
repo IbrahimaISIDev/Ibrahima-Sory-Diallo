@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Attendre que la base de données soit prête
+wait-for-it postgres:5432 -t 60
+
 # Démarrer PHP-FPM
 php-fpm -D
 
@@ -7,4 +10,4 @@ php-fpm -D
 php artisan migrate --force
 
 # Démarrer le serveur Laravel
-php artisan serve --host=0.0.0.0 --port=9000
+php artisan serve --port=$PORT
