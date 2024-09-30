@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Démarrer PHP-FPM
+# Démarrer PHP-FPM en arrière-plan
 php-fpm &
 
-# Démarrer Nginx
+# Démarrer Nginx au premier plan
 nginx -g 'daemon off;'
