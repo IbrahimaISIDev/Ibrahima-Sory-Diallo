@@ -12,6 +12,12 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libpq-dev \
     nginx \
+    # Installation de l'extension MongoDB
+    libcurl4-openssl-dev \
+    libssl-dev \
+    pkg-config \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql pdo_pgsql zip opcache
 
@@ -25,21 +31,18 @@ WORKDIR /var/www
 COPY . /var/www
 
 # Installation des dépendances PHP
-#RUN composer install --optimize-autoloader --no-dev
+RUN composer install --no-dev --optimize-autoloader
 
 # Configuration des permissions
-# RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
-#     && chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 RUN mkdir -p /var/www/storage/logs /var/www/bootstrap/cache \
     && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
     && chmod -R 777 /var/www/storage /var/www/bootstrap/cache
-
 
 # Configuration de Nginx
 #COPY nginx/default.conf /etc/nginx/sites-available/default
 #RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
-# COPY env.example .env and generate key
+# Copie env.example .env et génération de clé
 # COPY .env.example .env
 # RUN php artisan key:generate
 
@@ -54,5 +57,6 @@ COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
 # Commande de démarrage
-CMD php artisan serve --host=0.0.0.0 --port=9005
-# CMD ["sh", "/usr/local/bin/start.sh"]
+CMD ["sh", "/usr/local/bin/start.sh"]
+# ou si tu veux garder l'option artisan
+# CMD php artisan serve --host=0.0.0.0 --port=9005
