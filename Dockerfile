@@ -39,6 +39,8 @@ RUN mkdir -p /var/www/storage/logs /var/www/bootstrap/cache \
     && chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 
 # Configuration de Nginx
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+
 #COPY nginx/default.conf /etc/nginx/sites-available/default
 #RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 

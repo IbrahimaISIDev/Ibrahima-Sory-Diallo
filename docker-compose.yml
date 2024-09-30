@@ -19,7 +19,7 @@ services:
     ports:
       - "9005:80"  # Changé de 8844 à 8845
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx:/etc/nginx/conf.d
       - .:/var/www
     depends_on:
       - app
