@@ -9,6 +9,8 @@ services:
       - ./gestion-ecole-laravel-firebase.json:/home/dev/Documents/gestion_scolaire_V2_Last/storage/firebase/firebase_reencoded.key
     networks:
       - app-network
+    expose:
+      - "9000"
     depends_on:
       - db
       - postgres
