@@ -10,7 +10,7 @@ services:
       - .:/var/www
       - ./gestion-ecole/ibrahima.json:/storage/firebase/app-gestion-pedagogique-firebase-adminsdk-pg06l-6570ed71c6.json
     ports:
-      - "9000:9000"  # Le serveur Artisan écoutera sur ce port
+      - "80:9000"  # Redirection du port 80 vers le port 9000
     networks:
       - laravel
     environment:
@@ -40,4 +40,3 @@ networks:
 
 volumes:
   postgres_data:  # Volume persistant pour les données PostgreSQL
-
