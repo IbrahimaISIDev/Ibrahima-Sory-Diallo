@@ -10,6 +10,8 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    'port' => env('PORT', 8000),
+
     'debug' => (bool) env('APP_DEBUG', false),
 
     'url' => env('APP_URL', 'http://localhost'),
