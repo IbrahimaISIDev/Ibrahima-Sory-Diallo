@@ -1,47 +1,41 @@
+# Dockerfile
 FROM php:8.3-fpm
 
-# Installer les dépendances
 RUN apt-get update && apt-get install -y \
     libzip-dev \
-    libonig-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libpq-dev \
     libcurl4-openssl-dev \
     libssl-dev \
     pkg-config \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \ 
-    zip unzip \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install pdo_mysql # Changer pdo_pgsql à pdo_mysql pour MySQL
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql pdo_pgsql zip opcache
 
-# Installer MongoDB si nécessaire
-RUN pecl install mongodb \
-    && docker-php-ext-enable mongodb
-
-
-# Installer les extensions PHP requises pour Laravel
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install pdo_pgsql  # Installation du driver pdo_pgsql
-
-# Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copier le projet Laravel dans le conteneur
 WORKDIR /var/www
-COPY . .
 
-# Installer les dépendances PHP
-RUN composer install --optimize-autoloader --no-dev
+COPY . /var/www
 
-# Changer les permissions pour les fichiers Laravel (storage et cache)
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 755 /var/www/storage \
-    && chmod -R 755 /var/www/bootstrap/cache
+RUN composer install --no-dev --optimize-autoloader
 
-# Exposer le port 8000 pour le serveur Artisan
-EXPOSE 8000
+RUN mkdir -p /var/www/storage/logs /var/www/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 777 /var/www/storage /var/www/bootstrap/cache
 
-# Lancer le serveur Laravel Artisan
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+EXPOSE 9000
+
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
+CMD ["sh", "/usr/local/bin/start.sh"]
