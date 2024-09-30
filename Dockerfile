@@ -41,7 +41,7 @@ RUN mkdir -p /var/www/storage/logs /var/www/bootstrap/cache \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Exposition du port
-EXPOSE 9000  
+EXPOSE 9005  
 
 # Copie et configuration du script de démarrage
 COPY start.sh /usr/local/bin/start.sh
