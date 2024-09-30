@@ -51,7 +51,7 @@ COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Exposition du port
-EXPOSE 80
+EXPOSE 9005
 
 # Copie et configuration du script de démarrage
 COPY start.sh /usr/local/bin/start.sh
