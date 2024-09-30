@@ -7,20 +7,17 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     libssl-dev \
     pkg-config \
-    libpng-dev \ 
-    libjpeg-dev \ 
+    libpng-dev \
+    libjpeg-dev \
     libfreetype6-dev \ 
     zip unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd \
-    && docker-php-ext-install pdo_mysql 
+    && docker-php-ext-install pdo_mysql # Changer pdo_pgsql à pdo_mysql pour MySQL
 
 # Installer MongoDB si nécessaire
 RUN pecl install mongodb \
     && docker-php-ext-enable mongodb
-
-# Autres configurations ou installations nécessaires...
-
 
 
 # Installer les extensions PHP requises pour Laravel
