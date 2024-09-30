@@ -21,6 +21,12 @@ RUN apt-get update && apt-get install -y \
 # Installation de Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Configuration de PHP et PHP-FPM
+RUN echo "error_log = /dev/stderr" >> /usr/local/etc/php-fpm.conf \
+    && echo "log_level = warning" >> /usr/local/etc/php-fpm.conf \
+    && echo "php_admin_value[error_log] = /dev/stderr" >> /usr/local/etc/php-fpm.d/www.conf \
+    && echo "catch_workers_output = yes" >> /usr/local/etc/php-fpm.d/www.conf
+
 # Définition du répertoire de travail
 WORKDIR /var/www
 
@@ -41,5 +47,5 @@ RUN chmod +x /usr/local/bin/start.sh
 # Exposition du port
 EXPOSE 80
 
-# Commande de démarrage
-CMD ["sh", "/usr/local/bin/start.sh"]
+# Commande de démarrage avec redirection des logs
+CMD ["/bin/bash", "-c", "/usr/local/bin/start.sh 2>&1 | tee /var/log/app.log"]
