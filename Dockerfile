@@ -14,19 +14,17 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     pkg-config \
     libssl-dev \
-    libpq-dev \
-    libcurl4-openssl-dev \
-    libssl-dev \
-    zlib1g-dev \
-    autoconf \
-    && pecl install mongodb \
-    && docker-php-ext-enable mongodb \
-    && docker-php-ext-install zip
+    libpq-dev  # Ajout de la bibliothèque PostgreSQL
 
 # Installer les extensions PHP requises pour Laravel
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd \
-    && docker-php-ext-install pdo_pgsql pdo_mysql  # Installation des drivers PostgreSQL et MySQL
+    && docker-php-ext-install pdo pdo_mysql zip \
+    && docker-php-ext-install pdo_pgsql  # Installation du driver pdo_pgsql
+
+# Installer l'extension MongoDB
+RUN pecl install mongodb \
+    && docker-php-ext-enable mongodb
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -44,7 +42,7 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/bootstrap/cache
 
 # Exposer le port 8000 pour le serveur Artisan
-EXPOSE 8000
+EXPOSE 9000
 
 # Lancer le serveur Laravel Artisan
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=9000"]
