@@ -39,13 +39,13 @@ abstract class FirebaseModel
             throw new \Exception('FIREBASE_CREDENTIALS_BASE64 is not set in .env file');
         }
 
-        $firebaseCredentialsJson = base64_decode($firebaseCredentialsBase64);
+        $firebaseCredentialsJson = json_decode(base64_decode($firebaseCredentialsBase64),true);
         $temporaryFilePath = sys_get_temp_dir() . '/firebase_credentials.json';
         file_put_contents($temporaryFilePath, $firebaseCredentialsJson);
 
         try {
             $factory = (new Factory)
-                ->withServiceAccount($temporaryFilePath)
+                ->withServiceAccount($firebaseCredentialsJson )
                 ->withDatabaseUri(config('database.connections.firebase.database'));
 
             $database = $factory->createDatabase();

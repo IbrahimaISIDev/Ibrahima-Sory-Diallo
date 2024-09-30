@@ -9,26 +9,43 @@ services:
     volumes:
       - .:/var/www
       - ./gestion-ecole/ibrahima.json:/storage/firebase/app-gestion-pedagogique-firebase-adminsdk-pg06l-6570ed71c6.json
-    ports:
-      - "80:9000"  # Redirection du port 80 vers le port 9000
+    expose:
+      - 9000
     networks:
       - laravel
     environment:
       DB_CONNECTION: pgsql
-      DB_HOST: postgres  # Nom du service PostgreSQL
+      DB_HOST: postgres
       DB_PORT: 5432
-      DB_DATABASE: gestion_laravel_project  # Nouvelle base de données
-      DB_USERNAME: ibrahima  # Nouvel utilisateur
-      DB_PASSWORD: Sonatel@2024  # Nouveau mot de passe
+      DB_DATABASE: gestion_laravel_project
+      DB_USERNAME: ibrahima
+      DB_PASSWORD: Sonatel@2024
+    depends_on:
+      - postgres
 
-  postgres:  # Service PostgreSQL
+  webserver:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    volumes:
+      - .:/var/www
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - laravel
+
+  postgres:
     image: postgres:latest
     container_name: postgres
     restart: always
     environment:
-      POSTGRES_DB: gestion_laravel_project  # Nouvelle base de données
-      POSTGRES_USER: ibrahima  # Nouvel utilisateur
-      POSTGRES_PASSWORD: Sonatel@2024  # Nouveau mot de passe
+      POSTGRES_DB: gestion_laravel_project
+      POSTGRES_USER: ibrahima
+      POSTGRES_PASSWORD: Sonatel@2024
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -39,4 +56,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:  # Volume persistant pour les données PostgreSQL
+  postgres_data:

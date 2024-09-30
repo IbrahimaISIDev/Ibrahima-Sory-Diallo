@@ -1,48 +1,48 @@
-# Utiliser une image PHP officielle avec FPM
 FROM php:8.3-fpm
 
-# Installer les dépendances nécessaires
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    libzip-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    curl \
     unzip \
     git \
-    curl \
-    libonig-dev \
-    pkg-config \
-    libssl-dev \
-    libpq-dev  # Ajout de la bibliothèque PostgreSQL
+    libpq-dev \
+    libzip-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql zip gd mbstring exif pcntl bcmath
 
-# Installer les extensions PHP requises pour Laravel
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install pdo pdo_mysql zip \
-    && docker-php-ext-install pdo_pgsql  # Installation du driver pdo_pgsql
-
-# Installer l'extension MongoDB
 RUN pecl install mongodb \
     && docker-php-ext-enable mongodb
 
-# Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copier le projet Laravel dans le conteneur
 WORKDIR /var/www
+
 COPY . .
 
-# Installer les dépendances PHP
-RUN composer install --optimize-autoloader --no-dev
+RUN chown -R www-data:www-data /var/www
 
-# Changer les permissions pour les fichiers Laravel (storage et cache)
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 755 /var/www/storage \
-    && chmod -R 755 /var/www/bootstrap/cache
+RUN if [ -n "$FIREBASE_KEY_BASE64" ]; then \
+        echo $FIREBASE_KEY_BASE64 | base64 -d > /var/www/firebase-key.json; \
+    fi
 
-# Exposer le port 9000 pour le serveur Artisan
+RUN composer install --no-dev --optimize-autoloader
+
+COPY .env.example .env
+RUN php artisan key:generate
+
+RUN chown -R www-data:www-data /var/www/storage \
+    && chmod -R 775 /var/www/storage \
+    && chmod -R 775 /var/www/bootstrap/cache
+
 EXPOSE 9000
 
-# Lancer le serveur Laravel Artisan
-CMD ["php-fpm"]
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
+CMD ["/usr/local/bin/start.sh"]
