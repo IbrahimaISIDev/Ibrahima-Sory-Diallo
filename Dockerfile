@@ -14,16 +14,19 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     pkg-config \
     libssl-dev \
-    libpq-dev  # Gardé au cas où vous utiliseriez PostgreSQL
+    libpq-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    zlib1g-dev \
+    autoconf \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
+    && docker-php-ext-install zip
 
 # Installer les extensions PHP requises pour Laravel
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd \
-    && docker-php-ext-install pdo pdo_mysql zip  # Installation du driver pdo_mysql
-
-# Installer l'extension MongoDB
-RUN pecl install mongodb \
-    && docker-php-ext-enable mongodb
+    && docker-php-ext-install pdo_pgsql pdo_mysql  # Installation des drivers PostgreSQL et MySQL
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
