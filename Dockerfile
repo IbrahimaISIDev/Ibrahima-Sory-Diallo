@@ -16,7 +16,8 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql pdo_pgsql zip gd mbstring exif pcntl bcmath
+    && docker-php-ext-install pdo pdo_pgsql zip gd mbstring exif pcntl bcmath
+#RUN docker-php-ext-install pdo pdo_pgsql
 
 # Installer l'extension MongoDB
 RUN pecl install mongodb \

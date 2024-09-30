@@ -16,4 +16,4 @@ php artisan migrate --force
 
 # Démarrer le serveur Laravel
 echo "Starting Laravel server..."
-php artisan serve --port=8000
+php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
