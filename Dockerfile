@@ -47,4 +47,4 @@ COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
 # Command to run the start script
-CMD ["sh", "/usr/local/bin/start.sh"]
+CMD ["PHP-FPM"]

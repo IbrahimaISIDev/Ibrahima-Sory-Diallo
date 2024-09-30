@@ -15,7 +15,7 @@ services:
       - laravel
     environment:
       DB_CONNECTION: mysql
-      DB_HOST: postgres  # Nom du service PostgreSQL
+      DB_HOST: localhost  # Nom du service PostgreSQL
       DB_PORT: 3306
       DB_DATABASE: projet_Scolaire
       DB_USERNAME: ibrahima
