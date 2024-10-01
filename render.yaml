@@ -41,3 +41,4 @@ services:
 databases:
   - name: gestion-pedagogique-db
     plan: starter
+
