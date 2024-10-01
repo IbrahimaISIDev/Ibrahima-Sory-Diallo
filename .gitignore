@@ -22,3 +22,5 @@ storage/Firebase/gestion-scolaire-75b42-firebase-adminsdk-t4mkq-71dad755d5.json
 
 /home/dev/Documents/gestion_scolaire/storage/Firebase/app-gestion-pedagogique-firebase-adminsdk-pg06l-6570ed71c6.json storage/firebase/app-gestion-pedagogique-firebase-adminsdk-pg06l-6570ed71c6.json
 storage/firebase/*.json
+
+secret/app-gestion-pedagogique-firebase-adminsdk-pg06l-6570ed71c6.json
