@@ -5,9 +5,7 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     plan: starter
-    branch: develop
-    buildCommand: docker build -t gestion-pedagogique .
-    startCommand: docker run gestion-pedagogique
+    branch: main
     numInstances: 1
     healthCheckPath: /
     envVars:
