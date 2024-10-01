@@ -1,3 +1,4 @@
+# docker-compose.yml
 version: '3'
 services:
   app:
@@ -10,6 +11,14 @@ services:
     working_dir: /var/www
     volumes:
       - ./:/var/www
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
     networks:
       - gestion-pedagogique
 
@@ -22,6 +31,8 @@ services:
     volumes:
       - ./:/var/www
       - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - app
     networks:
       - gestion-pedagogique
 
