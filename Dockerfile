@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     git \
     libpq-dev \
     libzip-dev \
+    postgresql-client \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_pgsql zip gd mbstring exif pcntl bcmath
 
@@ -24,10 +25,6 @@ RUN pecl install mongodb \
 
 # Installation de Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Installation de wait-for-it
-ADD https://github.com/vishnubob/wait-for-it/raw/master/wait-for-it.sh /usr/local/bin/wait-for-it
-RUN chmod +x /usr/local/bin/wait-for-it
 
 WORKDIR /var/www
 
@@ -44,9 +41,9 @@ RUN chown -R www-data:www-data /var/www/storage \
     && chmod -R 775 /var/www/storage \
     && chmod -R 775 /var/www/bootstrap/cache
 
-EXPOSE 9000
+EXPOSE 8000
 
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
-CMD ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["/usr/local/bin/start.sh"]
