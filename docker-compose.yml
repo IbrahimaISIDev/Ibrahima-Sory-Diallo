@@ -12,7 +12,7 @@ services:
     volumes:
       - ./:/var/www
     environment:
-      - DB_HOST=db
+      - DB_HOST=postgres
       - DB_PORT=5432
       - DB_DATABASE=${DB_DATABASE}
       - DB_USERNAME=${DB_USERNAME}
