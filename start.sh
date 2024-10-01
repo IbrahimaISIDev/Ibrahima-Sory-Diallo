@@ -1,14 +1,15 @@
+# start.sh
 #!/bin/sh
 
 echo "Starting deployment script..."
 
 # Attendre que la base de données soit prête
 echo "Waiting for database..."
-wait-for-it ${DB_HOST}:${DB_PORT} -t 60
-
-# Démarrer PHP-FPM
-echo "Starting PHP-FPM..."
-php-fpm -D
+until nc -z -v -w30 $DB_HOST $DB_PORT
+do
+  echo "Waiting for database connection..."
+  sleep 5
+done
 
 # Exécuter les migrations de la base de données
 echo "Running database migrations..."

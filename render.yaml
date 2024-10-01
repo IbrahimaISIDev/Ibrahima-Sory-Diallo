@@ -1,3 +1,4 @@
+# render.yaml
 services:
   - type: web
     name: gestion-pedagogique
@@ -41,4 +42,3 @@ services:
 databases:
   - name: gestion-pedagogique-db
     plan: starter
-
